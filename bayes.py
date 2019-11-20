@@ -54,7 +54,7 @@ class NaiveBayes():
     def trainModel(self):
         trainLabels = self.dataFrame["Yards"].values
         self.dataFrame = self.dataFrame.drop(["Yards"],axis=1)
-        trainVectors = self.dataFrame.values
+        trainVectors = self.dataFrame.values    
         self.model.fit(trainVectors,trainLabels)
         
     
