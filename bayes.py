@@ -16,7 +16,7 @@ class NaiveBayes():
         self.model = BernoulliNB()
         # print(self.dataFrame["Down"])
         self.parseData()
-        # self.dataFrame = self.dataFrame.head(n=500)
+        self.dataFrame = self.dataFrame.head(n=250)
         # for index, value in enumerate(list(set(self.dataFrame["WindDirection"]))):
         #     print(index,value)
         # print(len(set(self.dataFrame["OffensePersonnel"])))
@@ -24,6 +24,7 @@ class NaiveBayes():
         
     #Parse Data
     def parseData(self):
+        self.dataFrame = self.dataFrame[self.dataFrame["NflIdRusher"] == self.dataFrame["NflId"]]
         self.dataFrame = self.preprocessUtil.dropColumns(self.dataFrame, [
                                                          "Orientation", "DisplayName", "JerseyNumber", "VisitorScoreBeforePlay", 
                                                          "HomeScoreBeforePlay", "PlayerBirthDate", "VisitorTeamAbbr", "HomeTeamAbbr", 
@@ -44,22 +45,17 @@ class NaiveBayes():
         self.dataFrame = self.preprocessUtil.discretizeValues(self.dataFrame, "StadiumType")
         #Game Weather
         self.dataFrame = self.preprocessUtil.discretizeValues(self.dataFrame, "GameWeather")
-        
-        
-        
-        
-        
-    
+        #Defenders in the Box
+        self.dataFrame = self.preprocessUtil.discretizeValues(self.dataFrame, "DefendersInTheBox")
+        #Wind Speed
+        self.dataFrame = self.preprocessUtil.discretizeValues(self.dataFrame, "WindSpeed")
+
     #Train model
     def trainModel(self):
         trainLabels = self.dataFrame["Yards"].values
         self.dataFrame = self.dataFrame.drop(["Yards"],axis=1)
-        self.dataFrame = self.dataFrame[self.dataFrame["NflIdRusher"] == self.dataFrame["NflId"]]
         trainVectors = self.dataFrame.values
-        # print(len(self.dataFrame.columns))
-        for col in self.dataFrame:
-            print(self.dataFrame[col].dtype)
-        # self.model.fit(trainVectors,trainLabels)
+        self.model.fit(trainVectors,trainLabels)
         
     
     #Predict
