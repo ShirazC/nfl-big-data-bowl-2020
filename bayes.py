@@ -14,13 +14,7 @@ class NaiveBayes():
         self.testPath = testPath
         self.dataFrame = pd.read_csv(self.trainPath)
         self.model = BernoulliNB()
-        # print(self.dataFrame["Down"])
         self.parseData()
-        self.dataFrame = self.dataFrame.head(n=250)
-        # for index, value in enumerate(list(set(self.dataFrame["WindDirection"]))):
-        #     print(index,value)
-        # print(len(set(self.dataFrame["OffensePersonnel"])))
-        # print(self.dataFrame["WindDirection"])
         
     #Parse Data
     def parseData(self):
@@ -52,20 +46,33 @@ class NaiveBayes():
 
     #Train model
     def trainModel(self):
-        trainLabels = self.dataFrame["Yards"].values
-        self.dataFrame = self.dataFrame.drop(["Yards"],axis=1)
-        trainVectors = self.dataFrame.values    
+        trainFrame = self.dataFrame.head(n=20000)
+        trainLabels = trainFrame["Yards"].values
+        trainFrame= trainFrame.drop(["Yards"],axis=1)
+        trainFrame = trainFrame.fillna(value=1.0)
+        trainVectors = trainFrame.values
         self.model.fit(trainVectors,trainLabels)
         
     
     #Predict
     def predict(self):
-        pass   
-        
-        
+        testFrame = self.dataFrame.tail(n=100)
+        testLabels = testFrame["Yards"].values
+        testFrame = testFrame.drop(["Yards"],axis=1)
+        testFrame = testFrame.fillna(value=1.0)
+        testVectors = testFrame.values
+        predictions = self.model.predict(testVectors)
+        numCorrect = 0.0
+        for prediction, trueYardage in zip(predictions,testLabels):
+            if abs(trueYardage - prediction) <= 1.5:
+                numCorrect += 1
+        print("Test Accuracy: %.2f%%" % (numCorrect / len(predictions))) 
+                
+                
 if __name__ == "__main__":
     bayesianModel = NaiveBayes("train.csv", None)
     bayesianModel.trainModel()
+    bayesianModel.predict()
         
         
         
