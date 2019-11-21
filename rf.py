@@ -64,7 +64,7 @@ class RandomForest():
     #Predict
 
     def predict(self):
-        testFrame = self.dataFrame.tail(n=100)
+        testFrame = self.dataFrame.tail(n=3000)
         testLabels = testFrame["Yards"].values
         testFrame = testFrame.drop(["Yards"], axis=1)
         testFrame = testFrame.fillna(value=1.0)
@@ -72,9 +72,9 @@ class RandomForest():
         predictions = self.model.predict(testVectors)
         numCorrect = 0.0
         for prediction, trueYardage in zip(predictions, testLabels):
-            if abs(trueYardage - prediction) <= 1.5:
-                numCorrect += 1
-        print("Test Accuracy: %.2f%%" % (numCorrect / len(predictions)))
+            if abs(prediction - trueYardage) <= 3.0:
+                numCorrect = numCorrect + 1
+        print("Test Accuracy: %.2f%%" % (numCorrect / len(predictions) * 100))
 
 
 if __name__ == "__main__":
